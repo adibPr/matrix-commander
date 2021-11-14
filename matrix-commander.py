@@ -822,6 +822,14 @@ VERIFY_UNUSED_DEFAULT = None  # use None if --verify is not specified
 VERIFY_USED_DEFAULT = "emoji"  # use emoji by default with --verify
 RENAME_DEVICE_UNUSED_DEFAULT = None  # use None if -m is not specified
 
+# https://stackoverflow.com/a/41153081
+class ExtendAction(argparse.Action):
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        items = getattr(namespace, self.dest) or []
+        items.extend(values)
+        setattr(namespace, self.dest, items)
+
 
 def choose_available_filename(filename):
     """Return next available filename.
@@ -3429,6 +3437,8 @@ if __name__ == "__main__":  # noqa: C901 # ignore mccabe if-too-complex
         f"version {VERSION}. Enjoy, star on Github and contribute by "
         "submitting a Pull Request. ",
     )
+
+    ap.register('action', 'extend', ExtendAction)
     # Add the arguments to the parser
     ap.add_argument(
         "-d",
